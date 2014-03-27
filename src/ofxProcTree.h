@@ -28,11 +28,11 @@ struct Properties {
     float climbRate             = 1.5;
     float trunkKink             = 0.00;
     float maxRadius             = 0.25;
-    int treeSteps               = 2;
+    int   treeSteps             = 2;
     float taperRate             = 0.95;
     float twistRate             = 13;
-    int segments                = 6;
-    int levels                  = 3;
+    int   segments              = 6;
+    int   levels                = 3;
     float sweepAmount           = 0;
     float initalBranchLength    = 0.85;
     float trunkLength           = 2.5;
@@ -41,14 +41,13 @@ struct Properties {
     float vMultiplier           = 0.2;
     float twigScale             = 2.0;
     float seed                  = 10;
-    float rseed                 =10;
-
+    float rseed                 = 10;
+    
     float random(float a){
         return abs(cos(a+a*a));
     };
     
 };
-
 
 class Branch {
 public:
@@ -69,6 +68,8 @@ public:
 
     ofMesh mesh;
     
+    string type;
+    
 };
 
 
@@ -88,7 +89,10 @@ public:
         troot->split(props);
         
     };
+    
+    
     ~ProcTree(){};
+
     
     void calcNormals();
     void doFaces(Branch * branch);
