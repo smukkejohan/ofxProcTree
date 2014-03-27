@@ -18,7 +18,7 @@ struct Properties {
     Properties();
     ~Properties();
     
-    void seed(int rseed);
+    void setSeed(float rseed);
     
     float clumpMax              = 0.8;
     float clumpMin              = 0.5;
@@ -44,13 +44,17 @@ struct Properties {
     float seed                  = 10;
     float rseed                 = 10;
     
+    
 };
 
 
 class Branch {
 public:
     
-    Branch(head, parent);
+    Branch * head;
+    Branch * parent;
+    
+    Branch(Branch * _head, Branch * _parent);
     ~Branch();
     
     
@@ -61,8 +65,9 @@ public:
     //head=null;
     int length = 1;
     
+    void mirrorBranch(ofVec3f vec, ofVec3f norm, Properties * prop);
+    void split(int level, int steps, Properties * prop, int l1, int l2);
     
-    void split(int level, int steps, Properties prop, );
     
     
     
@@ -72,27 +77,22 @@ public:
 class ProcTree {
 public:
     
-    Branch * root;
+    Branch * troot;
     Properties props;
     
-    ProcTree(
-             props = new Properties();
-             props.seed();
-             root = new Branch(0,props.trunkLength,0);
-    ){
-        
+    ProcTree(){
+        props.seed();
+        troot = new Branch(0,props.trunkLength,0);
         
     };
     ~ProcTree(){};
     
-
-    
     
     
     void calcNormals();
-    void doFaces(branch);
-    void createTwigs(branch);
-    void createForks(branch, float radius);
+    void doFaces(Branch * branch);
+    void createTwigs(Branch * branch);
+    void createForks(Branch * branch, float radius);
     
     
     
