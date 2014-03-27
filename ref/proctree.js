@@ -347,7 +347,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             ring1.push(linch1);
             verts.push(addVec(centerloc,scaleVec(tangent,-radius*scale)));
  
- //HERTIL
             for(var i=segments/2+1;i<segments;i++){
                 var vec=vecAxisAngle(tangent,axis1,segmentAngle*i);
                 ring0.push(verts.length);

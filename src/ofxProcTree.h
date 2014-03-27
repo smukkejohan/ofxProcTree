@@ -98,7 +98,7 @@ namespace ofxProcTree {
         vector<int> * ring1;
         vector<int> * ring2;
         
-        int end;        
+        int * end;
     };
     
     
@@ -126,14 +126,27 @@ namespace ofxProcTree {
             troot = new Branch(new ofVec3f(0,props->trunkLength,0));
             troot->length = props->initalBranchLength;
             troot->split(props);
+            createForks(troot);
+            //createTwigs();
+            doFaces(troot);
+            //calcNormals();
+
+            mesh.addVertices(verts);
+            //mesh.addNormals(normals);
+            mesh.addTexCoords(UV);
+            for (vector< vector<int> >::iterator it = faces.begin();it != faces.end(); ++it){
+                vector<int> v = *(it);
+                mesh.addTriangle(v[0], v[1], v[2]);
+            }
+            
         }
 
         ~Tree(){};
         
         void calcNormals();
-        void doFaces(Branch * branch = NULL);
-        void createTwigs(Branch * branch = NULL);
-        void createForks(Branch * branch = NULL, float radius = -1);
+        void doFaces(Branch * b);
+        void createTwigs(Branch * b);
+        void createForks(Branch * b, float radius = -1);
         
         vector<ofVec3f> verts;
         vector<vector<int> > faces;
