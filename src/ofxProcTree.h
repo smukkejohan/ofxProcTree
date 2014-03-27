@@ -70,6 +70,8 @@ public:
 
     ofMesh mesh;
     
+    string type;
+    
 };
 
 
