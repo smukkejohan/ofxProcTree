@@ -9,8 +9,7 @@
 // Based on https://github.com/supereggbert/proctree.js by Paul Brunt
 
 #include "ofMain.h"
-#include <array.h>
-
+#include "ofxMeshUtils.h"
 
 namespace ofxProcTree {
     
@@ -139,6 +138,10 @@ namespace ofxProcTree {
                 mesh.addTriangle(v[0], v[1], v[2]);
             }
             
+            mesh.mergeDuplicateVertices();
+            
+            ofxMeshUtils::calcNormals(mesh);
+            
         }
 
         ~Tree(){};
@@ -153,7 +156,7 @@ namespace ofxProcTree {
         vector<ofVec3f> normals;
         vector<ofVec2f> UV;
         
-        ofMesh mesh;
+        ofVboMesh mesh;
         
         void drawSkeleton();
         
