@@ -383,7 +383,40 @@ void ofxProcTree::Tree::createForks(ofxProcTree::Branch *branch, float radius){
         verts.push_back(ofVec3f(centerloc + tangent.getScaled(-radius*scale)));
         
         //HERTIL
+        for(int i = segments/2+1;i<segments;i++){
+            ofVec3f vec = TreeUtils::vecAxisAngle(tangent, axis1, segmentAngle*i);
+            ring0->push_back(verts.size());
+            ring1->push_back(verts.size());
+            verts.push_back(centerloc + vec.getScaled(radius*scale));
+        }
+        ring1->push_back(linch0);
+        ring2->push_back(linch1);
         
+        start = verts.size()-1;
+        for (int i = 1; i < segments/2; i++) {
+            ofVec3f vec = TreeUtils::vecAxisAngle(tangent, axis3, segmentAngle*i);
+            ring1->push_back(start+i);
+            ring2->push_back(start+(segments/2-i));
+            ofVec3f v = vec.getScaled(radius*scale);
+            verts.push_back(centerloc + v);
+        }
+
+        //child radius is related to the brans direction and the length of the branch
+        float length0 = ofVec3f(*(branch->head)-*(branch->child0->head)).length();
+        float length1 = ofVec3f(*(branch->head)-*(branch->child1->head)).length();
+        
+        float radius0 = 1.0 * radius * props->radiusFalloffRate;
+        float radius1 = 1.0 * radius * props->radiusFalloffRate;
+        
+        if(branch->child0->type == "trunk"){
+            radius0 = radius * props->taperRate;
+        }
+        createForks(branch->child0, radius0);
+        createForks(branch->child1, radius1);
+    } else {
+        //add points for the ends of braches
+        branch->end = verts.size();
+        verts.push_back(*(branch->head));
     }
 }
 
