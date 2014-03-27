@@ -66,9 +66,8 @@ public:
     int length = 1;
     
     void mirrorBranch(ofVec3f vec, ofVec3f norm, Properties * prop);
+    void split(Properties * prop);
     void split(int level, int steps, Properties * prop, int l1, int l2);
-    
-    
     
     
 };
@@ -78,11 +77,14 @@ class ProcTree {
 public:
     
     Branch * troot;
-    Properties props;
+    Properties * props;
     
     ProcTree(){
-        props.setSeed(ofRandom(0.0,10.0));
-        troot = new Branch(ofVec3f(0,props.trunkLength,0));
+        props = new Properties();
+        
+        props->setSeed(ofRandom(0.0,10.0));
+        troot = new Branch(ofVec3f(0,props->trunkLength,0));
+        troot->split(props);
         
     };
     ~ProcTree(){};
