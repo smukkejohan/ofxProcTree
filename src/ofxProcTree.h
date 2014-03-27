@@ -68,7 +68,6 @@ public:
     void split(Properties * prop);
     void split(int level, int steps, Properties * prop, int l1, int l2);
     
-    
 };
 
 
@@ -89,8 +88,7 @@ public:
         
     };
     ~ProcTree(){};
-    
-    
+
     
     void calcNormals();
     void doFaces(Branch * branch);
