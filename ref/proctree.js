@@ -464,43 +464,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     };
 
 
-    var dot=function(v1,v2){
-        return v1[0]*v2[0]+v1[1]*v2[1]+v1[2]*v2[2];
-    };
-    var cross=function(v1,v2){
-        return [v1[1]*v2[2]-v1[2]*v2[1],v1[2]*v2[0]-v1[0]*v2[2],v1[0]*v2[1]-v1[1]*v2[0]];
-    };
-    var length=function(v){
-        return Math.sqrt(v[0]*v[0]+v[1]*v[1]+v[2]*v[2]);
-    };
-    var normalize=function(v){
-        var l=length(v);
-        return scaleVec(v,1/l);
-    };
-    var scaleVec=function(v,s){
-        return [v[0]*s,v[1]*s,v[2]*s];
-    };
-    var subVec=function(v1,v2){
-        return [v1[0]-v2[0],v1[1]-v2[1],v1[2]-v2[2]];
-    };
-    var addVec=function(v1,v2){
-        return [v1[0]+v2[0],v1[1]+v2[1],v1[2]+v2[2]];
-    };
-
-    var vecAxisAngle=function(vec,axis,angle){
-        //v cos(T) + (axis x v) * sin(T) + axis*(axis . v)(1-cos(T)
-        var cosr=Math.cos(angle);
-        var sinr=Math.sin(angle);
-        return addVec(addVec(scaleVec(vec,cosr),scaleVec(cross(axis,vec),sinr)),scaleVec(axis,dot(axis,vec)*(1-cosr)));
-    };
-    
-    var scaleInDirection=function(vector,direction,scale){
-        var currentMag=dot(vector,direction);
-        
-        var change=scaleVec(direction,currentMag*scale-currentMag);
-        return addVec(vector,change);
-    };
-    
     Tree.flattenArray=function(input){
         var retArray=[];
         for(var i=0;i<input.length;i++){
