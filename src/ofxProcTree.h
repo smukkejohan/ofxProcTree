@@ -67,6 +67,8 @@ public:
     void mirrorBranch(ofVec3f vec, ofVec3f norm, Properties * prop);
     void split(Properties * prop);
     void split(int level, int steps, Properties * prop, int l1, int l2);
+
+    ofMesh mesh;
     
 };
 
@@ -87,6 +89,8 @@ public:
         troot->split(props);
         
     };
+    
+    
     ~ProcTree(){};
 
     
@@ -95,7 +99,7 @@ public:
     void createTwigs(Branch * branch);
     void createForks(Branch * branch, float radius);
     
-    
+    ofMesh mesh;
     
     //void flattenArray(input);
     
