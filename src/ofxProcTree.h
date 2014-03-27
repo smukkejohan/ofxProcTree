@@ -53,18 +53,17 @@ struct Properties {
 class Branch {
 public:
     
-    Branch * head   = NULL;
-    Branch * paren  = NULL;
+    ofVec3f * head  = NULL;
+    Branch * parent = NULL;
     Branch * child0 = NULL;
     Branch * child1 = NULL;
     
-    Branch(ofVec3f _head);
-    Branch(Branch * _head = NULL, Branch * _parent = NULL);
+    Branch(ofVec3f * _head = NULL, Branch * _parent = NULL);
     ~Branch();
     
-    int length = 1;
+    float length = 1;
     
-    void mirrorBranch(ofVec3f vec, ofVec3f norm, Properties * prop);
+    ofVec3f mirrorBranch(ofVec3f vec, ofVec3f norm, Properties * prop);
     void split(Properties * prop);
     void split(int level, int steps, Properties * prop, int l1, int l2);
 
@@ -83,7 +82,7 @@ public:
         props = new Properties();
         
         props->setSeed(ofRandom(0.0,10.0));
-        troot = new Branch(ofVec3f(0,props->trunkLength,0));
+        troot = new Branch(new ofVec3f(0,props->trunkLength,0));
         
         troot->length = props->initalBranchLength;
         troot->split(props);
