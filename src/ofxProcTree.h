@@ -41,7 +41,8 @@ public:
     float twigScale             = 2.0;
     float seed                  = 10;
     float rseed                 =10;
-    
+
+    ofMesh mesh;
     
     void calcNormals();
     void
