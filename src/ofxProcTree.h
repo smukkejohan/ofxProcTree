@@ -10,13 +10,15 @@
 
 #include "ofMain.h"
 
-class ProcTree {
-public:
-    ProcTree(){
-        
-        
-    };
-    ~ProcTree(){};
+
+
+
+struct Properties {
+    
+    Properties();
+    ~Properties();
+    
+    void seed(int rseed);
     
     float clumpMax              = 0.8;
     float clumpMin              = 0.5;
@@ -40,11 +42,61 @@ public:
     float vMultiplier           = 0.2;
     float twigScale             = 2.0;
     float seed                  = 10;
-    float rseed                 =10;
+    float rseed                 = 10;
+    
+};
+
+
+class Branch {
+public:
+    
+    Branch(head, parent);
+    ~Branch();
+    
+    
+    
+    //child0=null;
+    //child1=null;
+    //parent=null;
+    //head=null;
+    int length = 1;
+    
+    
+    void split(int level, int steps, Properties prop, );
+    
+    
+    
+};
+
+
+class ProcTree {
+public:
+    
+    Branch * root;
+    Properties props;
+    
+    ProcTree(
+             props = new Properties();
+             props.seed();
+             root = new Branch(0,props.trunkLength,0);
+    ){
+        
+        
+    };
+    ~ProcTree(){};
+    
+
+    
     
     
     void calcNormals();
-    void
+    void doFaces(branch);
+    void createTwigs(branch);
+    void createForks(branch, float radius);
+    
+    
+    
+    
     
     
     
