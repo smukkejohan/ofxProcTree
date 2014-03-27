@@ -1,5 +1,5 @@
 //
-//  ofxSnappyTree.cpp
+//  ofxProcTree.cpp
 //  Trae
 //
 //  Created by Johan Bichel Lindegaard on 27/03/14.
