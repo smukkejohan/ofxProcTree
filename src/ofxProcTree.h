@@ -43,6 +43,10 @@ public:
     float rseed                 =10;
     
     
+    void calcNormals();
+    void
+    
+    
     
     
 };
