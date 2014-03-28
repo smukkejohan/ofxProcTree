@@ -10,8 +10,8 @@
 
 #include "ofxProcTree.h"
 
-void ofxProcTree::Tree::doFaces(Branch *b){
-    Branch * branch;
+void ofxProcTree::doFaces(ofxProcTreeBranch *b){
+    ofxProcTreeBranch * branch;
     if(b == NULL) {
         branch = troot;
     } else {
@@ -63,8 +63,8 @@ void ofxProcTree::Tree::doFaces(Branch *b){
         ofVec3f v1 = ofVec3f(verts[branch->ring1->at(0)] - *(branch->head));
         ofVec3f v2 = ofVec3f(verts[branch->ring2->at(0)] - *(branch->head));
         
-        v1 = TreeUtils::scaleInDirection(v1, ofVec3f(*(branch->child0->head) - *(branch->head)).getNormalized(), 0);
-        v2 = TreeUtils::scaleInDirection(v2, ofVec3f(*(branch->child1->head) - *(branch->head)).getNormalized(), 0);
+        v1 = ofxProcTreeUtils::scaleInDirection(v1, ofVec3f(*(branch->child0->head) - *(branch->head)).getNormalized(), 0);
+        v2 = ofxProcTreeUtils::scaleInDirection(v2, ofVec3f(*(branch->child1->head) - *(branch->head)).getNormalized(), 0);
         
         for(int i = 0; i < segments; i++){
             ofVec3f d = ofVec3f(verts[branch->child0->ring0->at(i)] - *(branch->child0->head)).getNormalized();
@@ -159,113 +159,11 @@ void ofxProcTree::Tree::doFaces(Branch *b){
 
         }
     }
-
-    /* reference implementation
-     
-    if(!branch) branch=this.root;
-        var segments=this.properties.segments;
-        var faces=this.faces;
-        var verts=this.verts;
-        var UV=this.UV;
-        if(!branch.parent){
-            for(i=0;i<verts.length;i++){
-                UV[i]=[0,0];
-            }
-            var tangent=normalize(cross(subVec(branch.child0.head,branch.head),subVec(branch.child1.head,branch.head)));
-            var normal=normalize(branch.head);
-            var angle=Math.acos(dot(tangent,[-1,0,0]));
-            if(dot(cross([-1,0,0],tangent),normal)>0) angle=2*Math.PI-angle;
-            var segOffset=Math.round((angle/Math.PI/2*segments));
-            for(var i=0;i<segments;i++){            
-                var v1=branch.ring0[i];
-                var v2=branch.root[(i+segOffset+1)%segments];
-                var v3=branch.root[(i+segOffset)%segments];
-                var v4=branch.ring0[(i+1)%segments];
-                
-                faces.push([v1,v4,v3]);
-                faces.push([v4,v2,v3]);
-                UV[(i+segOffset)%segments]=[Math.abs(i/segments-0.5)*2,0];
-                var len=length(subVec(verts[branch.ring0[i]],verts[branch.root[(i+segOffset)%segments]]))*this.properties.vMultiplier;
-                UV[branch.ring0[i]]=[Math.abs(i/segments-0.5)*2,len];
-                UV[branch.ring2[i]]=[Math.abs(i/segments-0.5)*2,len];
-            }
-        }
-        
-        if(branch.child0.ring0){
-            var segOffset0,segOffset1;
-            var match0,match1;
-            
-            var v1=normalize(subVec(verts[branch.ring1[0]],branch.head));
-            var v2=normalize(subVec(verts[branch.ring2[0]],branch.head));
-            
-            v1=scaleInDirection(v1,normalize(subVec(branch.child0.head,branch.head)),0);
-            v2=scaleInDirection(v2,normalize(subVec(branch.child1.head,branch.head)),0);
-            
-            for(i=0;i<segments;i++){
-                var d=normalize(subVec(verts[branch.child0.ring0[i]],branch.child0.head));
-                var l=dot(d,v1);
-                if(segOffset0===undefined || l>match0){
-                    match0=l;
-                    segOffset0=segments-i;
-                }
-                d=normalize(subVec(verts[branch.child1.ring0[i]],branch.child1.head));
-                l=dot(d,v2);
-                if(segOffset1==undefined || l>match1){
-                    match1=l;
-                    segOffset1=segments-i;
-                }
-            }
-            
-            var UVScale=this.properties.maxRadius/branch.radius;            
-
-            
-            for(i=0;i<segments;i++){
-                v1=branch.child0.ring0[i];
-                v2=branch.ring1[(i+segOffset0+1)%segments];
-                v3=branch.ring1[(i+segOffset0)%segments];
-                v4=branch.child0.ring0[(i+1)%segments];
-                faces.push([v1,v4,v3]);
-                faces.push([v4,v2,v3]);
-                v1=branch.child1.ring0[i];
-                v2=branch.ring2[(i+segOffset1+1)%segments];
-                v3=branch.ring2[(i+segOffset1)%segments];
-                v4=branch.child1.ring0[(i+1)%segments];
-                faces.push([v1,v2,v3]);
-                faces.push([v1,v4,v2]);
-                
-                var len1=length(subVec(verts[branch.child0.ring0[i]],verts[branch.ring1[(i+segOffset0)%segments]]))*UVScale;
-                var uv1=UV[branch.ring1[(i+segOffset0-1)%segments]];
-                
-                UV[branch.child0.ring0[i]]=[uv1[0],uv1[1]+len1*this.properties.vMultiplier];
-                UV[branch.child0.ring2[i]]=[uv1[0],uv1[1]+len1*this.properties.vMultiplier];
-                
-                var len2=length(subVec(verts[branch.child1.ring0[i]],verts[branch.ring2[(i+segOffset1)%segments]]))*UVScale;
-                var uv2=UV[branch.ring2[(i+segOffset1-1)%segments]];
-                
-                UV[branch.child1.ring0[i]]=[uv2[0],uv2[1]+len2*this.properties.vMultiplier];
-                UV[branch.child1.ring2[i]]=[uv2[0],uv2[1]+len2*this.properties.vMultiplier];
-            }
-
-            this.doFaces(branch.child0);
-            this.doFaces(branch.child1);
-        }else{
-            for(var i=0;i<segments;i++){
-                faces.push([branch.child0.end,branch.ring1[(i+1)%segments],branch.ring1[i]]);
-                faces.push([branch.child1.end,branch.ring2[(i+1)%segments],branch.ring2[i]]);
-                
-                
-                var len=length(subVec(verts[branch.child0.end],verts[branch.ring1[i]]));
-                UV[branch.child0.end]=[Math.abs(i/segments-1-0.5)*2,len*this.properties.vMultiplier];
-                var len=length(subVec(verts[branch.child1.end],verts[branch.ring2[i]]));
-                UV[branch.child1.end]=[Math.abs(i/segments-0.5)*2,len*this.properties.vMultiplier];
-            }
-        }
-     */
 }
 
-void ofxProcTree::Tree::createTwigs(ofxProcTree::Branch *b){
+void ofxProcTree::createTwigs(ofxProcTreeBranch *b){
     
-    Branch * branch;
+    ofxProcTreeBranch * branch;
     //TODO: CREATE TWIGS
     if (!b) {
         branch = this->troot;
@@ -275,8 +173,8 @@ void ofxProcTree::Tree::createTwigs(ofxProcTree::Branch *b){
     
 }
 
-void ofxProcTree::Tree::createForks(ofxProcTree::Branch *b, float radius){
-    Branch * branch;
+void ofxProcTree::createForks(ofxProcTreeBranch *b, float radius){
+    ofxProcTreeBranch * branch;
     
     if(b == NULL){
         branch = troot;
@@ -301,7 +199,7 @@ void ofxProcTree::Tree::createForks(ofxProcTree::Branch *b, float radius){
         branch->root = new vector<int>;
         ofVec3f axis(0,1,0);
         for(int i = 0; i < segments; i++){
-            ofVec3f vec = ofVec3f(ofxProcTree::TreeUtils::vecAxisAngle(ofVec3f(-1,0,0), axis, -segmentAngle*i));
+            ofVec3f vec = ofVec3f(ofxProcTreeUtils::vecAxisAngle(ofVec3f(-1,0,0), axis, -segmentAngle*i));
             branch->root->push_back(verts.size());
             verts.push_back(vec.getScaled(radius/props->radiusFalloffRate));
         }
@@ -345,14 +243,14 @@ void ofxProcTree::Tree::createForks(ofxProcTree::Branch *b, float radius){
         verts.push_back(ofVec3f(centerloc+tangent.getScaled(radius*scale)));
         
         int start = verts.size()-1;
-        ofVec3f d1 = TreeUtils::vecAxisAngle(tangent, axis2, 1.57);
+        ofVec3f d1 = ofxProcTreeUtils::vecAxisAngle(tangent, axis2, 1.57);
         ofVec3f d2 = tangent.getCrossed(axis).getNormalized();
         float s = 1./d1.dot(d2);
         for (int i = 1; i<segments/2; i++) {
-            ofVec3f vec = TreeUtils::vecAxisAngle(tangent, axis2, segmentAngle*i);
+            ofVec3f vec = ofxProcTreeUtils::vecAxisAngle(tangent, axis2, segmentAngle*i);
             branch->ring0->push_back(start+i);
             branch->ring2->push_back(start+i);
-            vec = TreeUtils::scaleInDirection(vec, d2, s);
+            vec = ofxProcTreeUtils::scaleInDirection(vec, d2, s);
             verts.push_back(ofVec3f(centerloc + vec.getScaled(radius*scale)));
         }
         int linch1 = verts.size();
@@ -361,7 +259,7 @@ void ofxProcTree::Tree::createForks(ofxProcTree::Branch *b, float radius){
         verts.push_back(ofVec3f(centerloc + tangent.getScaled(-radius*scale)));
 
         for(int i = segments/2+1;i<segments;i++){
-            ofVec3f vec = TreeUtils::vecAxisAngle(tangent, axis1, segmentAngle*i);
+            ofVec3f vec = ofxProcTreeUtils::vecAxisAngle(tangent, axis1, segmentAngle*i);
             branch->ring0->push_back(verts.size());
             branch->ring1->push_back(verts.size());
             verts.push_back(centerloc + vec.getScaled(radius*scale));
@@ -371,7 +269,7 @@ void ofxProcTree::Tree::createForks(ofxProcTree::Branch *b, float radius){
         
         start = verts.size()-1;
         for (int i = 1; i < segments/2.; i++) {
-            ofVec3f vec = TreeUtils::vecAxisAngle(tangent, axis3, segmentAngle*i);
+            ofVec3f vec = ofxProcTreeUtils::vecAxisAngle(tangent, axis3, segmentAngle*i);
             branch->ring1->push_back(start+i);
             branch->ring2->push_back(start+(segments/2-i));
             ofVec3f v = vec.getScaled(radius*scale);
@@ -397,7 +295,7 @@ void ofxProcTree::Tree::createForks(ofxProcTree::Branch *b, float radius){
     }
 }
 
-ofxProcTree::Branch::Branch(ofVec3f * _head, Branch* _parent){
+ofxProcTreeBranch::ofxProcTreeBranch(ofVec3f * _head, ofxProcTreeBranch* _parent){
     child0 = NULL;
     child1 = NULL;
     parent = NULL;
@@ -416,22 +314,22 @@ ofxProcTree::Branch::Branch(ofVec3f * _head, Branch* _parent){
     parent = _parent;
 }
 
-ofVec3f ofxProcTree::Branch::mirrorBranch(ofVec3f vec, ofVec3f norm, Properties *prop){
+ofVec3f ofxProcTreeBranch::mirrorBranch(ofVec3f vec, ofVec3f norm, Properties *prop){
     ofVec3f v = norm.getCrossed(vec.getCrossed(norm));
     float s = prop->branchFactor*v.dot(vec);
     return ofVec3f(vec.x-v.x*s,vec.y-v.y*s,vec.z-v.z*s);
 }
 
-void ofxProcTree::Branch::split(Properties *prop){
+void ofxProcTreeBranch::split(Properties *prop){
     // how to overload, nulling is not possible, we use negative ints.
     split(prop->levels,prop->treeSteps, prop, 1, 1);
 }
 
-void ofxProcTree::Tree::drawSkeleton(){
+void ofxProcTree::drawSkeleton(){
     troot->drawSkeleton();
 }
 
-void ofxProcTree::Branch::split(int level, int steps, Properties *prop, int l1, int l2){
+void ofxProcTreeBranch::split(int level, int steps, Properties *prop, int l1, int l2){
     float rLevel = prop->levels-level;
     ofVec3f * po;
     if (parent) {
@@ -470,8 +368,8 @@ void ofxProcTree::Branch::split(int level, int steps, Properties *prop, int l1, 
     newdir2 =ofVec3f(newdir2+ofVec3f(sweepAmount,dropAmount+growAmount,0)).getNormalized();
     ofVec3f * head0 = new ofVec3f(*(so) + newdir.getScaled(length));
     ofVec3f * head1 = new ofVec3f(*(so) + newdir2.getScaled(length));
-    child0=new Branch(head0,this);
-    child1=new Branch(head1,this);
+    child0=new ofxProcTreeBranch(head0,this);
+    child1=new ofxProcTreeBranch(head1,this);
     child0->length = powf(length, prop->lengthFalloffPower)*prop->lengthFalloffFactor;
     child1->length = powf(length, prop->lengthFalloffPower)*prop->lengthFalloffFactor;
     if(level > 0){
