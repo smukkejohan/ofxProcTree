@@ -146,7 +146,6 @@ namespace ofxProcTree {
 
         ~Tree(){};
         
-        void calcNormals();
         void doFaces(Branch * b);
         void createTwigs(Branch * b);
         void createForks(Branch * b, float radius = -1);
@@ -165,8 +164,7 @@ namespace ofxProcTree {
     };
     
     
-    class TreeUtils { // We probably don't need any of this
-        
+    class TreeUtils {
     public:
         
         static ofVec3f scaleInDirection(ofVec3f vec, ofVec3f dir, float scale){
@@ -180,46 +178,5 @@ namespace ofxProcTree {
             float sinr=sin(angle);
             return ofVec3f((vec.getScaled(cosr) + axis.getCrossed(vec).getScaled(sinr))+ axis.getScaled(axis.dot(vec)*(1-cosr)));
         };
-
-        
-        /*
-         var dot=function(v1,v2){
-         return v1[0]*v2[0]+v1[1]*v2[1]+v1[2]*v2[2];
-         };
-         var cross=function(v1,v2){
-         return [v1[1]*v2[2]-v1[2]*v2[1],v1[2]*v2[0]-v1[0]*v2[2],v1[0]*v2[1]-v1[1]*v2[0]];
-         };
-         var length=function(v){
-         return Math.sqrt(v[0]*v[0]+v[1]*v[1]+v[2]*v[2]);
-         };
-         var normalize=function(v){
-         var l=length(v);
-         return scaleVec(v,1/l);
-         };
-         var scaleVec=function(v,s){
-         return [v[0]*s,v[1]*s,v[2]*s];
-         };
-         var subVec=function(v1,v2){
-         return [v1[0]-v2[0],v1[1]-v2[1],v1[2]-v2[2]];
-         };
-         var addVec=function(v1,v2){
-         return [v1[0]+v2[0],v1[1]+v2[1],v1[2]+v2[2]];
-         };
-         
-         var vecAxisAngle=function(vec,axis,angle){
-         //v cos(T) + (axis x v) * sin(T) + axis*(axis . v)(1-cos(T)
-         var cosr=Math.cos(angle);
-         var sinr=Math.sin(angle);
-         return addVec(addVec(scaleVec(vec,cosr),scaleVec(cross(axis,vec),sinr)),scaleVec(axis,dot(axis,vec)*(1-cosr)));
-         };
-         
-         var scaleInDirection=function(vector,direction,scale){
-         var currentMag=dot(vector,direction);
-         
-         var change=scaleVec(direction,currentMag*scale-currentMag);
-         return addVec(vector,change);
-         };
-         */
-        
     };
 }

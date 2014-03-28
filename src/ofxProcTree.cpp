@@ -10,39 +10,6 @@
 
 #include "ofxProcTree.h"
 
-void ofxProcTree::Tree::calcNormals(){
-    
-    // implement using https://github.com/ofZach/ofxMeshUtils.git
-    // ofxMeshUtils::calcNormals( mesh, true );
-    
-    /* reference implementation
-     
-        var normals=this.normals;
-        var faces=this.faces;
-        var verts=this.verts;
-        var allNormals=[];
-        for(var i=0;i<verts.length;i++){
-            allNormals[i]=[];
-        }
-        for(i=0;i<faces.length;i++){
-            var face=faces[i];
-            var norm=normalize(cross(subVec(verts[face[1]],verts[face[2]]),subVec(verts[face[1]],verts[face[0]])));
-            allNormals[face[0]].push(norm);
-            allNormals[face[1]].push(norm);
-            allNormals[face[2]].push(norm);
-        }
-        for(i=0;i<allNormals.length;i++){
-            var total=[0,0,0];
-            var l=allNormals[i].length;
-            for(var j=0;j<l;j++){
-                total=addVec(total,scaleVec(allNormals[i][j],1/l));
-            }
-            normals[i]=total;
-        }
-    };
-     */
-};
-
 void ofxProcTree::Tree::doFaces(Branch *b){
     Branch * branch;
     if(b == NULL) {
@@ -63,7 +30,7 @@ void ofxProcTree::Tree::doFaces(Branch *b){
         if(ofVec3f(-1,0,0).getCrossed(tangent).dot(normal) > 0){
             angle = 2*PI-angle;
         }
-        int segOffset = roundf((angle/PI/2*segments));
+        int segOffset = roundf((angle/PI/2.*segments));
         for (int i = 0; i < segments; i++){
             int v1 = branch->ring0->at(i);
             int v2 = branch->root->at((i+segOffset+1)%segments);
@@ -327,7 +294,7 @@ void ofxProcTree::Tree::createForks(ofxProcTree::Branch *b, float radius){
     
     int segments = props->segments;
     
-    float segmentAngle = PI*2/segments;
+    float segmentAngle = PI*2./segments;
     
     if(branch->parent == NULL){
         // create the root of the tree
@@ -358,7 +325,7 @@ void ofxProcTree::Tree::createForks(ofxProcTree::Branch *b, float radius){
         ofVec3f axis3 = tangent.getCrossed(ofVec3f(axis1.getScaled(-1) + axis2.getScaled(-1)).getNormalized()).getNormalized();
         
         ofVec3f dir = ofVec3f(axis2.x,0,axis2.z);
-        ofVec3f centerloc = ofVec3f(*(branch->head) + dir.getScaled(props->maxRadius/2));
+        ofVec3f centerloc = ofVec3f(*(branch->head) + dir.getScaled(props->maxRadius/2.));
         
         branch->ring0 = new vector<int>;
         branch->ring1 = new vector<int>;
@@ -465,7 +432,7 @@ void ofxProcTree::Tree::drawSkeleton(){
 }
 
 void ofxProcTree::Branch::split(int level, int steps, Properties *prop, int l1, int l2){
-    int rLevel = prop->levels-level;
+    float rLevel = prop->levels-level;
     ofVec3f * po;
     if (parent) {
         po = parent->head;
@@ -477,14 +444,15 @@ void ofxProcTree::Branch::split(int level, int steps, Properties *prop, int l1, 
     ofVec3f dir = ofVec3f(*(so) - *(po)).getNormalized();
     ofVec3f normal = dir.getCrossed(ofVec3f(dir.z, dir.x, dir.y));
     ofVec3f tangent = dir.getCrossed(normal);
-    float r = prop->random(rLevel*10+l1*5+l2+prop->seed);
-    float r2 = prop->random(rLevel*10+l1*5+l2+1+prop->seed);
+    float r = prop->random(float(rLevel)*10.+l1*5.+l2+float(prop->seed));
+    float r2 = prop->random(float(rLevel)*10.+l1*5.+l2+1.+float(prop->seed));
     float clumpMax = prop->clumpMax;
     float clumpMin = prop->clumpMin;
-    ofVec3f adj = normal.getScaled(r)+tangent.getScaled(1-r);
+    ofVec3f adj = ofVec3f(normal.getScaled(r)+tangent.getScaled(1.0-r));
     if(r>0.5){adj = adj.getScaled(-1);}
-    float clump = (clumpMax-clumpMin)*r*clumpMin;
-    ofVec3f newdir = ofVec3f(adj.getScaled(1-clump)+dir.getScaled(clump)).getNormalized();
+    
+    float clump = (clumpMax-clumpMin)*r+clumpMin;
+    ofVec3f newdir = ofVec3f(adj.getScaled(1.-clump)+dir.getScaled(clump)).getNormalized();
     ofVec3f newdir2 = mirrorBranch(newdir, dir, prop);
     if (r>0.5) {
         ofVec3f tmp = newdir;
@@ -492,12 +460,12 @@ void ofxProcTree::Branch::split(int level, int steps, Properties *prop, int l1, 
         newdir2 = tmp;
     }
     if(steps>0){
-        float angle=steps/prop->treeSteps*2*PI*prop->twistRate;
+        float angle=float(steps)/float(prop->treeSteps)*2.0*PI*prop->twistRate;
         newdir2=ofVec3f(sin(angle), r, cos(angle)).getNormalized();
     }
-    float growAmount = level*level/(prop->levels*prop->levels)*prop->growAmount;
-    float dropAmount = rLevel*prop->dropAmount;
-    float sweepAmount = rLevel*prop->sweepAmount;
+    float growAmount = float(level*level)/float(prop->levels*prop->levels)*prop->growAmount;
+    float dropAmount = float(rLevel)*prop->dropAmount;
+    float sweepAmount = float(rLevel)*prop->sweepAmount;
     newdir = ofVec3f(newdir+ofVec3f(sweepAmount,dropAmount+growAmount,0)).getNormalized();
     newdir2 =ofVec3f(newdir2+ofVec3f(sweepAmount,dropAmount+growAmount,0)).getNormalized();
     ofVec3f * head0 = new ofVec3f(*(so) + newdir.getScaled(length));
@@ -508,7 +476,7 @@ void ofxProcTree::Branch::split(int level, int steps, Properties *prop, int l1, 
     child1->length = powf(length, prop->lengthFalloffPower)*prop->lengthFalloffFactor;
     if(level > 0){
         if(steps > 0){
-            child0->head = new ofVec3f(*(head) + ofVec3f((r-0.5)*2*prop->trunkKink,prop->climbRate,(r-0.5)*2*prop->trunkKink));
+            child0->head = new ofVec3f(*(head) + ofVec3f((r-0.5)*2.0*prop->trunkKink,prop->climbRate,(r-0.5)*2.0*prop->trunkKink));
             child0->type = "trunk";
             child0->length=length*prop->taperRate;
             child0->split(level,steps-1,prop,l1+1,l2);
