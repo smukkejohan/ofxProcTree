@@ -2,6 +2,8 @@ Procedural Tree's for OpenFrameworks
 ====================================
 Based on https://github.com/supereggbert/proctree.js
 
+![screenshot ofxProcTree](screenshot.png)
+
 Dependencies
 ------------
 ofxMeshUtils
