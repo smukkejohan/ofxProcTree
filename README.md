@@ -1,4 +1,4 @@
-Procedural Tree's for OpenFrameworks
+Procedural Tree Generator for openFrameworks
 ====================================
 Based on https://github.com/supereggbert/proctree.js
 
