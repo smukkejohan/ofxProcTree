@@ -2,7 +2,7 @@
 //  ofxProcTree.cpp
 //  Trae
 //
-//  Created by Johan Bichel Lindegaard on 27/03/14.
+//  Created by Johan Bichel Lindegaard and Ole Kristensen on 27/03/14.
 //
 //
 

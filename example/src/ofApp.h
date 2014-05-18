@@ -21,7 +21,11 @@ class ofApp : public ofBaseApp{
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
 	
-        ProcTree tree;
-
+        ofxProcTree * tree;
+        ofCamera cam;
+        ofLight pointLight;
+        ofLight dirLight;
+    
+    bool drawSkeleton;
 };
 
